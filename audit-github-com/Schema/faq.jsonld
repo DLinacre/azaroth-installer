@@ -1,0 +1,38 @@
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is Azaroth Core legal to use?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The installer itself is open source (MIT) and does not redistribute Blizzard game files — it reuses the 3.3.5a client you already own. Running a private World of Warcraft server and using bots can violate Blizzard's Terms of Use/EULA. This project is intended for private, non-commercial, educational use at your own risk."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I need to compile anything?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Download setup.exe from Releases, run it, and click Full Auto Install. The wizard downloads and configures everything; no terminal or compiler is required. Building from source is optional and requires the .NET 8 SDK."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why does Windows SmartScreen warn about setup.exe?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The community build is not yet code-signed, so SmartScreen shows a warning on first run. Click 'More info' then 'Run anyway'. You can verify the installer with the published SHA-256 checksum. Signed releases are on the roadmap."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I play with friends on my LAN?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Enable LAN play in the wizard, set the realm/auth address to the server PC's LAN IP, and the installer configures the firewall for local-subnet access only. Do not expose the server to the internet without changing default credentials."
+      }
+    }
+  ]
+}

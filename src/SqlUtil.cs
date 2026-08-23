@@ -5,18 +5,64 @@ namespace AzarothInstaller;
 
 public static class SqlUtil
 {
+    public static string QuoteIdent(string name)
+    {
+        if (string.IsNullOrEmpty(name)) throw new ArgumentException("Identifier cannot be empty.");
+        if (name.Contains('\0')) throw new ArgumentException("Identifier cannot contain NUL bytes.");
+        return "`" + name.Replace("`", "``") + "`";
+    }
+
+    public static string QuoteString(string value)
+    {
+        if (value == null) return "NULL";
+        return "'" + value.Replace("\\", "\\\\").Replace("'", "''") + "'";
+    }
+
+    public static string WriteDefaultsFile(DbServerInfo db, string database = null)
+    {
+        var path = Path.Combine(Path.GetTempPath(), "azmy_" + Guid.NewGuid().ToString("N") + ".cnf");
+        var lines = new List<string>
+        {
+            "[client]",
+            $"host={db.Host}",
+            $"port={db.Port}",
+            $"user={db.Login}",
+            $"password={db.Password}",
+            "protocol=TCP",
+            "default-character-set=utf8mb4"
+        };
+        if (!string.IsNullOrEmpty(database)) lines.Add($"database={database}");
+        File.WriteAllText(path, string.Join("\r\n", lines) + "\r\n");
+
+        try
+        {
+            var acl = new System.Security.AccessControl.FileSecurity();
+            var currentUser = System.Security.Principal.WindowsIdentity.GetCurrent().User;
+            acl.SetOwner(currentUser);
+            acl.SetAccessRuleProtection(isProtected: true, preserveInheritance: false);
+            acl.AddAccessRule(new System.Security.AccessControl.FileSystemAccessRule(
+                currentUser,
+                System.Security.AccessControl.FileSystemRights.FullControl,
+                System.Security.AccessControl.AccessControlType.Allow));
+            var fi = new FileInfo(path);
+            fi.SetAccessControl(acl);
+        }
+        catch { }
+
+        return path;
+    }
+
     /// <summary>Run an SQL file through the mysql/mariadb client. Returns process exit code.</summary>
     public static int ImportSqlFile(DbServerInfo db, string database, string sqlFile, Action<string> log)
     {
         string realSql = null;
         bool isTempSql = false;
+        string defaultsFile = null;
         try
         {
             realSql = EnsurePlainSql(sqlFile, out isTempSql);
-            var bat = WriteTempBat(
-                $"\"{db.MysqlExe}\" --host={db.Host} --port={db.Port} --user={db.Login} " +
-                MysqlPassArg(db.Password) + " --protocol=TCP --default-character-set=utf8mb4 " +
-                DbArg(database) + " < \"" + realSql + "\"");
+            defaultsFile = WriteDefaultsFile(db, database);
+            var bat = WriteTempBat($"\"{db.MysqlExe}\" --defaults-extra-file=\"{defaultsFile}\" < \"{realSql}\"");
             var (code, outp) = RunBat(bat);
             log?.Invoke($"SQL import: {Path.GetFileName(sqlFile)} -> {database} (exit {code})");
             if (!string.IsNullOrWhiteSpace(outp))
@@ -30,6 +76,10 @@ public static class SqlUtil
         }
         finally
         {
+            if (!string.IsNullOrEmpty(defaultsFile) && File.Exists(defaultsFile))
+            {
+                try { File.Delete(defaultsFile); } catch { }
+            }
             if (isTempSql && !string.IsNullOrEmpty(realSql) && File.Exists(realSql))
             {
                 try { File.Delete(realSql); } catch { }
@@ -39,11 +89,20 @@ public static class SqlUtil
 
     public static (int code, string outp) Query(DbServerInfo db, string database, string sql)
     {
-        var bat = WriteTempBat(
-            $"\"{db.MysqlExe}\" --host={db.Host} --port={db.Port} --user={db.Login} " +
-            MysqlPassArg(db.Password) + " --protocol=TCP -N -B " +
-            DbArg(database) + " -e \"" + sql.Replace("\"", "\\\"") + "\"");
-        return RunBat(bat);
+        string defaultsFile = null;
+        try
+        {
+            defaultsFile = WriteDefaultsFile(db, database);
+            var bat = WriteTempBat($"\"{db.MysqlExe}\" --defaults-extra-file=\"{defaultsFile}\" -N -B -e \"{sql.Replace("\"", "\\\"")}\"");
+            return RunBat(bat);
+        }
+        finally
+        {
+            if (!string.IsNullOrEmpty(defaultsFile) && File.Exists(defaultsFile))
+            {
+                try { File.Delete(defaultsFile); } catch { }
+            }
+        }
     }
 
     public static bool ServerAlive(DbServerInfo db)
@@ -62,7 +121,7 @@ public static class SqlUtil
         try
         {
             var (code, outp) = Query(db, null,
-                "SELECT SCHEMA_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME='" + name + "'");
+                "SELECT SCHEMA_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME=" + QuoteString(name));
             return code == 0 && outp.Contains(name);
         }
         catch { return false; }
@@ -76,7 +135,7 @@ public static class SqlUtil
             return 0;
         }
         var (code, outp) = Query(db, null,
-            $"CREATE DATABASE IF NOT EXISTS `{name}` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+            $"CREATE DATABASE IF NOT EXISTS {QuoteIdent(name)} DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
         if (code != 0) log?.Invoke("create database failed: " + Truncate(outp, 300));
         else log?.Invoke($"created database '{name}'");
         return code;
@@ -84,16 +143,21 @@ public static class SqlUtil
 
     public static int EnsureUserAndGrants(DbServerInfo db, DbConfig cfg, Action<string> log)
     {
-        string esc = cfg.Password.Replace("\\", "\\\\").Replace("'", "''");
+        string escUser = QuoteString(cfg.Login);
+        string escPass = QuoteString(cfg.Password);
+        string authDb = QuoteIdent(cfg.AuthDb);
+        string charDb = QuoteIdent(cfg.CharactersDb);
+        string worldDb = QuoteIdent(cfg.WorldDb);
+
         var sql =
-            $"CREATE USER IF NOT EXISTS '{cfg.Login}'@'localhost' IDENTIFIED BY '{esc}';" +
-            $"CREATE USER IF NOT EXISTS '{cfg.Login}'@'127.0.0.1' IDENTIFIED BY '{esc}';" +
-            $"GRANT ALL PRIVILEGES ON `{cfg.AuthDb}`.* TO '{cfg.Login}'@'localhost';" +
-            $"GRANT ALL PRIVILEGES ON `{cfg.CharactersDb}`.* TO '{cfg.Login}'@'localhost';" +
-            $"GRANT ALL PRIVILEGES ON `{cfg.WorldDb}`.* TO '{cfg.Login}'@'localhost';" +
-            $"GRANT ALL PRIVILEGES ON `{cfg.AuthDb}`.* TO '{cfg.Login}'@'127.0.0.1';" +
-            $"GRANT ALL PRIVILEGES ON `{cfg.CharactersDb}`.* TO '{cfg.Login}'@'127.0.0.1';" +
-            $"GRANT ALL PRIVILEGES ON `{cfg.WorldDb}`.* TO '{cfg.Login}'@'127.0.0.1';" +
+            $"CREATE USER IF NOT EXISTS {escUser}@'localhost' IDENTIFIED BY {escPass};" +
+            $"CREATE USER IF NOT EXISTS {escUser}@'127.0.0.1' IDENTIFIED BY {escPass};" +
+            $"GRANT ALL PRIVILEGES ON {authDb}.* TO {escUser}@'localhost';" +
+            $"GRANT ALL PRIVILEGES ON {charDb}.* TO {escUser}@'localhost';" +
+            $"GRANT ALL PRIVILEGES ON {worldDb}.* TO {escUser}@'localhost';" +
+            $"GRANT ALL PRIVILEGES ON {authDb}.* TO {escUser}@'127.0.0.1';" +
+            $"GRANT ALL PRIVILEGES ON {charDb}.* TO {escUser}@'127.0.0.1';" +
+            $"GRANT ALL PRIVILEGES ON {worldDb}.* TO {escUser}@'127.0.0.1';" +
             "FLUSH PRIVILEGES;";
         var (code, outp) = Query(db, null, sql);
         if (code != 0) log?.Invoke("user/grants setup problem: " + Truncate(outp, 300));

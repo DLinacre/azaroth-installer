@@ -1,0 +1,9 @@
+# For a future GitHub Pages site (https://dlinacre.github.io/azaroth-installer/).
+# Not relevant to the github.com repo itself (GitHub controls its own robots.txt).
+User-agent: *
+Allow: /
+
+# Block no-indexed utility paths if any
+Disallow: /assets/source/
+
+Sitemap: https://dlinacre.github.io/azaroth-installer/sitemap.xml

@@ -45,6 +45,13 @@ public class AppConfig
                     cfg.World ??= new WorldOptionsConfig();
                     cfg.PlayerBots ??= new PlayerBotsConfig();
                     cfg.WowClient ??= new WowClientConfig();
+
+                    // Secure credentials: auto-generate strong random passwords if unconfigured or default
+                    if (string.IsNullOrWhiteSpace(cfg.Database.Password) || cfg.Database.Password == "Azar0th!DB")
+                        cfg.Database.Password = PasswordGen.Generate(24);
+                    if (string.IsNullOrWhiteSpace(cfg.Server.GmPassword) || cfg.Server.GmPassword == "gm1234")
+                        cfg.Server.GmPassword = PasswordGen.Generate(16);
+
                     return cfg;
                 }
             }
@@ -92,12 +99,13 @@ public class UrlDownload
     public List<string> Urls { get; set; } = new();
     public bool OnlyIfMissing { get; set; }
     public string Hint { get; set; } = "";
+    public string Sha256 { get; set; } = "";
 }
 
 public class DbConfig
 {
     public string Login { get; set; } = "azaroth";
-    public string Password { get; set; } = "Azar0th!DB";
+    public string Password { get; set; } = PasswordGen.Generate(24);
     public string RootLogin { get; set; } = "root";
     public string RootPassword { get; set; } = "";
     public string AuthDb { get; set; } = "azaroth_auth";
@@ -111,12 +119,13 @@ public class ServerConfig
     public int AuthPort { get; set; } = 3724;
     public string RealmAddress { get; set; } = "127.0.0.1";
     public int RealmPort { get; set; } = 8085;
-    public string ListenAddress { get; set; } = "0.0.0.0";
+    public string ListenAddress { get; set; } = "127.0.0.1";
     public int MaxPlayers { get; set; } = 500;
     public string GmUsername { get; set; } = "gm";
-    public string GmPassword { get; set; } = "gm1234";
+    public string GmPassword { get; set; } = PasswordGen.Generate(16);
     public string GmCharacterName { get; set; } = "Azaroth";
-    public bool FirewallRules { get; set; } = true;
+    public bool FirewallRules { get; set; } = false;
+    public bool LanPlay { get; set; } = false;
 }
 
 public class PlayerBotsConfig

@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Azaroth Core — One-Click Installer for AzerothCore 3.3.5a + PlayerBots</title>
+  <meta name="description" content="A single setup.exe installs a private AzerothCore 3.3.5a (WotLK) server with PlayerBots. No terminal, no compiler, no developer skills — just click Full Auto Install.">
+  <link rel="canonical" href="https://dlinacre.github.io/azaroth-installer/">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../CSS/styles.css">
+
+  <!-- Open Graph / Twitter (see Metadata/meta-tags.html) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Azaroth Core — One-Click Installer">
+  <meta property="og:description" content="No terminal. No compiler. One setup.exe. Private AzerothCore 3.3.5a + PlayerBots in minutes.">
+  <meta property="og:url" content="https://dlinacre.github.io/azaroth-installer/">
+  <meta property="og:image" content="assets/og-banner.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#12141A">
+
+  <!-- Structured data -->
+  <script type="application/ld+json" src="../Schema/software-application.jsonld"></script>
+  <script type="application/ld+json" src="../Schema/faq.jsonld"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header" role="banner">
+    <div class="wrap nav">
+      <a class="brand" href="/" aria-label="Azaroth Core home">
+        <span class="brand-mark" aria-hidden="true">⚔</span>
+        <span class="brand-name">Azaroth <span>Core</span></span>
+      </a>
+      <nav aria-label="Primary">
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="#faq">FAQ</a>
+        <a href="https://github.com/DLinacre/azaroth-installer">GitHub</a>
+        <a class="btn btn-primary"
+           href="https://github.com/DLinacre/azaroth-installer/releases/latest">
+          ⬇ Download setup.exe
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <p class="eyebrow">AzerothCore 3.3.5a · PlayerBots · Windows</p>
+          <h1>Your own WotLK world,<br>installed with <em>one click</em>.</h1>
+          <p class="lede">
+            A single <code>setup.exe</code> installs a complete private
+            <strong>AzerothCore 3.3.5a</strong> server with the
+            <strong>PlayerBots</strong> module — hardware check, database,
+            data, firewall, shortcuts and a boot test, all automatic.
+          </p>
+          <div class="cta-row">
+            <a class="btn btn-primary btn-lg"
+               href="https://github.com/DLinacre/azaroth-installer/releases/latest">
+              ⬇ Download for Windows
+            </a>
+            <a class="btn btn-ghost btn-lg"
+               href="https://github.com/DLinacre/azaroth-installer#quick-start-end-user">
+              See the quick start
+            </a>
+          </div>
+          <ul class="badges" aria-label="Requirements">
+            <li>Windows 10/11 64-bit</li>
+            <li>4 GB RAM</li>
+            <li>30 GB disk</li>
+            <li>Your own 3.3.5a client</li>
+          </ul>
+          <p class="legal-note">
+            ⚠ For private, non-commercial use. Running a private WoW server can
+            violate Blizzard's Terms of Use. This installer does not redistribute
+            game client files.
+          </p>
+        </div>
+        <div class="hero-art" role="img"
+             aria-label="Fantasy banner: a dragon behind two crossed runic swords">
+          <img src="assets/banner.png" alt="Azaroth Core — One-Click Installer" width="1280" height="640" loading="eager">
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="section">
+      <div class="wrap">
+        <h2>What it does for you</h2>
+        <div class="grid grid-3">
+          <article class="card">
+            <h3>⚡ Full auto install</h3>
+            <p>Approve the UAC prompt and click once. The wizard picks the best
+               drive, downloads what's missing, configures everything, and
+               verifies the server boots before handing over.</p>
+          </article>
+          <article class="card">
+            <h3>🤖 PlayerBots, ready to play</h3>
+            <p>Random bots fill the world; <code>lfg</code> instantly fills a
+               raid tank/healer/DPS. Summon any class, run your alts as bots,
+               configure population and guilds.</p>
+          </article>
+          <article class="card">
+            <h3>🧠 Smart detection</h3>
+            <p>Probes CPU, RAM, GPU and every drive; finds your existing WoW
+               3.3.5a client; detects any repack layout; reuses any existing
+               MySQL/MariaDB — and never destroys your characters on re-runs.</p>
+          </article>
+          <article class="card">
+            <h3>🛡 Safety built in</h3>
+            <p>Zip-slip protection, idempotent installs, repair mode, a live log
+               with automatic diagnostics, and localhost-by-default networking.</p>
+          </article>
+          <article class="card">
+            <h3>🧩 Module picker</h3>
+            <p>Toggle every module DLL your repack ships (transmog, AH bot, guild
+               houses…), add extra modules by URL, and install the GM Genie
+               add-on in one click.</p>
+          </article>
+          <article class="card">
+            <h3>🔧 Make it yours</h3>
+            <p>Realm name, XP/Honor/Gold rates, level cap, bot population,
+               GM credentials — all in the wizard, or pre-configured via
+               <code>config.json</code>.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="how" class="section section-alt">
+      <div class="wrap">
+        <h2>From download to playing in three steps</h2>
+        <ol class="steps">
+          <li>
+            <span class="step-num" aria-hidden="true">1</span>
+            <h3>Get setup.exe</h3>
+            <p>Download from <a href="https://github.com/DLinacre/azaroth-installer/releases/latest">Releases</a>,
+               extract, double-click. SmartScreen → <em>More info → Run anyway</em>.</p>
+          </li>
+          <li>
+            <span class="step-num" aria-hidden="true">2</span>
+            <h3>Click Full Auto Install</h3>
+            <p>Provide a prebuilt Windows AzerothCore zip (or a direct link in
+               <code>config.json</code>). Then grab a coffee.</p>
+          </li>
+          <li>
+            <span class="step-num" aria-hidden="true">3</span>
+            <h3>Start &amp; play</h3>
+            <p>Use the desktop shortcuts to <strong>Start Server</strong>, wait
+               for “world server is running”, then <strong>Play</strong> and log
+               in with the GM credentials the wizard created for you.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="faq" class="section">
+      <div class="wrap narrow">
+        <h2>Frequently asked questions</h2>
+        <details>
+          <summary>Is this legal?</summary>
+          <p>The installer is open source (MIT) and does not redistribute Blizzard
+             files — it reuses the 3.3.5a client you own. Running a private server
+             can violate Blizzard's EULA/ToU; it's intended for private,
+             non-commercial, educational use at your own risk.</p>
+        </details>
+        <details>
+          <summary>Why does SmartScreen warn me?</summary>
+          <p>The community build isn't code-signed (yet). Click “More info → Run
+             anyway”. Verify the SHA-256 checksum on the release page. Signed
+             builds are on the roadmap.</p>
+        </details>
+        <details>
+          <summary>Can I play with friends?</summary>
+          <p>Yes — enable LAN play, set the auth/realm address to the server PC's
+             LAN IP, and the installer opens the firewall for the local subnet.
+             Don't expose the server to the internet without changing credentials.</p>
+        </details>
+        <details>
+          <summary>Where do I get a “prebuilt repack”?</summary>
+          <p>The wizard is repack-agnostic and accepts any prebuilt Windows
+             AzerothCore 3.3.5a zip. Host your own, or use a community repack you
+             trust. A direct HTTPS link can be set in <code>config.json</code>.</p>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <p>© 2026 Azaroth Core contributors · MIT License</p>
+      <nav aria-label="Footer">
+        <a href="https://github.com/DLinacre/azaroth-installer">Source</a>
+        <a href="https://github.com/DLinacre/azaroth-installer/blob/main/docs/CONFIG.md">Config docs</a>
+        <a href="https://github.com/DLinacre/azaroth-installer/blob/main/docs/TROUBLESHOOTING.md">Troubleshooting</a>
+        <a href="https://github.com/DLinacre/azaroth-installer/blob/main/LICENSE">License</a>
+      </nav>
+    </div>
+  </footer>
+  <script src="../JavaScript/main.js" defer></script>
+</body>
+</html>

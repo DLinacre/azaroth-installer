@@ -1428,16 +1428,42 @@ public class ServerBuilder
             {
                 StartHidden(layout.WorldserverExe, sd);
                 started.Add("worldserver");
-                Log("worldserver starting (first boot loads the database - this can take a while)...");
-                await Task.Delay(45000);
-                if (Misc.ProcessRunning("worldserver"))
+                Log("worldserver starting (monitoring boot logs and process status)...");
+
+                var sw = Stopwatch.StartNew();
+                bool processReady = false;
+                while (sw.ElapsedMilliseconds < 120000)
+                {
+                    await Task.Delay(1500);
+                    if (!Misc.ProcessRunning("worldserver"))
+                    {
+                        Log("worldserver process exited unexpectedly — configuration or database problem.");
+                        DumpTailLogs(sd);
+                        return false;
+                    }
+
+                    if (CheckWorldserverReadyLog(sd))
+                    {
+                        Log($"worldserver initialized successfully after {sw.Elapsed.TotalSeconds:0.#}s.");
+                        processReady = true;
+                        break;
+                    }
+
+                    if (sw.ElapsedMilliseconds > 20000 && Misc.ProcessRunning("worldserver"))
+                    {
+                        processReady = true;
+                        break;
+                    }
+                }
+
+                if (processReady && Misc.ProcessRunning("worldserver"))
                 {
                     Log("worldserver is running and stable. All services verified.");
                     ok = true;
                 }
                 else
                 {
-                    Log("worldserver process exited - configuration or database problem.");
+                    Log("worldserver boot timed out or did not initialize properly.");
                     DumpTailLogs(sd);
                     return false;
                 }
@@ -1492,6 +1518,25 @@ public class ServerBuilder
         catch { }
     }
 
+    bool CheckWorldserverReadyLog(string serverDir)
+    {
+        try
+        {
+            var logsDir = Path.Combine(serverDir, "logs");
+            if (!Directory.Exists(logsDir)) return false;
+            var latestLog = Directory.GetFiles(logsDir, "*.log")
+                .OrderByDescending(f => File.GetLastWriteTimeUtc(f))
+                .FirstOrDefault();
+            if (latestLog == null) return false;
+            var text = File.ReadAllText(latestLog);
+            return text.Contains("AzerothCore", StringComparison.OrdinalIgnoreCase) &&
+                   (text.Contains("ready", StringComparison.OrdinalIgnoreCase) ||
+                    text.Contains("initialized", StringComparison.OrdinalIgnoreCase) ||
+                    text.Contains("worldserver process ready", StringComparison.OrdinalIgnoreCase));
+        }
+        catch { return false; }
+    }
+
     // ================================================================== marker
     public void WriteMarker(InstallSummary summary)
     {
@@ -1524,6 +1569,12 @@ public class ServerBuilder
             @"C:\Azaroth Core",
             Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) + "\\Azaroth Core"
         };
+        foreach (var drive in SysProbe.SafeDrives())
+        {
+            var root = drive.RootDirectory.FullName;
+            candidates.Add(Path.Combine(root, "Azaroth Core"));
+            candidates.Add(Path.Combine(root, "Program Files", "Azaroth Core"));
+        }
         foreach (var c in candidates.Distinct())
         {
             var marker = Path.Combine(c, "azaroth-installer.json");

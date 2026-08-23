@@ -1,0 +1,51 @@
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Azaroth Core — One-Click Installer",
+  "alternateName": "AzerothCore 3.3.5a + PlayerBots One-Click Installer",
+  "applicationCategory": "GameApplication",
+  "applicationSubCategory": "Private server installer",
+  "operatingSystem": "Windows 10, Windows 11 (64-bit)",
+  "softwareVersion": "1.0.0",
+  "programmingLanguage": "C#",
+  "runtimePlatform": ".NET 8",
+  "description": "A single setup.exe that installs a private AzerothCore 3.3.5a (Wrath of the Lich King) server with the PlayerBots module — no terminal, no compiler, no developer skills required.",
+  "url": "https://dlinacre.github.io/azaroth-installer/",
+  "downloadUrl": "https://github.com/DLinacre/azaroth-installer/releases/latest",
+  "softwareHelp": "https://github.com/DLinacre/azaroth-installer/blob/main/docs/TROUBLESHOOTING.md",
+  "license": "https://github.com/DLinacre/azaroth-installer/blob/main/LICENSE",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "Azaroth Core contributors",
+    "url": "https://github.com/DLinacre/azaroth-installer"
+  },
+  "sourceOrganization": {
+    "@type": "Organization",
+    "name": "Azaroth Core contributors"
+  },
+  "codeRepository": "https://github.com/DLinacre/azaroth-installer",
+  "keywords": "AzerothCore, World of Warcraft, WotLK, 3.3.5a, PlayerBots, private server, installer, Windows, one-click, WinForms, .NET",
+  "featureList": [
+    "One-click full-auto install",
+    "Hardware detection (CPU/RAM/GPU/drives)",
+    "Repack-agnostic layout detection",
+    "Automatic database setup (bundled / existing / fresh MySQL or MariaDB)",
+    "PlayerBots configuration (randombots, AddClass pool, instant raids)",
+    "Module picker with enable/disable",
+    "WoW 3.3.5a client auto-detection and realmlist patching",
+    "Boot smoke test with live log and diagnostics",
+    "Repair mode that preserves characters"
+  ],
+  "softwareRequirements": [
+    "Windows 10/11 64-bit",
+    "4 GB RAM (8–16 GB recommended)",
+    "30 GB free disk space",
+    "Your own World of Warcraft 3.3.5a (build 12340) client"
+  ]
+}

@@ -135,4 +135,19 @@ public static class Downloader
         if (File.Exists(destFile)) File.Delete(destFile);
         File.Move(tmp, destFile);
     }
+
+    /// <summary>Verifies the SHA-256 checksum of a file against an expected hex string.</summary>
+    public static async Task VerifySha256Async(string filePath, string expectedSha256, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(expectedSha256)) return;
+        using var sha = System.Security.Cryptography.SHA256.Create();
+        await using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 262144, true);
+        var hashBytes = await sha.ComputeHashAsync(fs, ct);
+        var actualHash = Convert.ToHexString(hashBytes);
+        if (!string.Equals(actualHash, expectedSha256.Trim(), StringComparison.OrdinalIgnoreCase))
+        {
+            try { File.Delete(filePath); } catch { }
+            throw new Exception($"SHA-256 checksum mismatch for {Path.GetFileName(filePath)}.\n  Expected: {expectedSha256}\n  Actual  : {actualHash}\nFile deleted due to checksum failure.");
+        }
+    }
 }

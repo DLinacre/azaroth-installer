@@ -218,7 +218,7 @@ public static class SysProbe
         return found.OrderByDescending(x => x.Score).ToList();
     }
 
-    static IEnumerable<DriveInfo> SafeDrives()
+    public static List<DriveInfo> SafeDrives()
     {
         try
         {

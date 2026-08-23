@@ -1080,11 +1080,26 @@ public class WizardForm : Form
 
         var gm = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3 };
         for (int i = 0; i < 3; i++) gm.RowStyles.Add(new RowStyle(SizeType.Percent, 33.33f));
-        _gmUserBox = new TextBox { Dock = DockStyle.Fill, Text = _cfg.Server.GmUsername };
-        _gmPassBox = new TextBox { Dock = DockStyle.Fill, Text = _cfg.Server.GmPassword };
-        _gmCharBox = new TextBox { Dock = DockStyle.Fill, Text = _cfg.Server.GmCharacterName, MaxLength = 12 };
+        _gmUserBox = new TextBox { Dock = DockStyle.Fill, Text = _cfg.Server.GmUsername, AccessibleName = "GM Username" };
+        _gmPassBox = new TextBox { Dock = DockStyle.Fill, Text = _cfg.Server.GmPassword, UseSystemPasswordChar = true, AccessibleName = "GM Password" };
+        _gmCharBox = new TextBox { Dock = DockStyle.Fill, Text = _cfg.Server.GmCharacterName, MaxLength = 12, AccessibleName = "GM Character Name" };
+
+        var passFlow = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 3 };
+        passFlow.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        passFlow.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 60));
+        passFlow.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 70));
+
+        var showCheck = new CheckBox { Text = "Show", AutoSize = true, ForeColor = Color.Silver, Margin = new Padding(4, 4, 0, 0) };
+        showCheck.CheckedChanged += (s, e) => _gmPassBox.UseSystemPasswordChar = !showCheck.Checked;
+        var genBtn = new Button { Text = "🎲 New", Height = 26, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(60, 64, 76), ForeColor = Color.White };
+        genBtn.Click += (s, e) => _gmPassBox.Text = PasswordGen.Generate(16);
+
+        passFlow.Controls.Add(_gmPassBox, 0, 0);
+        passFlow.Controls.Add(showCheck, 1, 0);
+        passFlow.Controls.Add(genBtn, 2, 0);
+
         gm.Controls.Add(Row2("GM account:", _gmUserBox), 0, 0);
-        gm.Controls.Add(Row2("GM password:", _gmPassBox), 0, 1);
+        gm.Controls.Add(Row2("GM password:", passFlow), 0, 1);
         gm.Controls.Add(Row2("GM character:", _gmCharBox), 0, 2);
         bottom.Controls.Add(gm, 0, 0);
 
@@ -1351,10 +1366,20 @@ public class WizardForm : Form
             }
             catch (Exception ex) { MessageBox.Show(this, "Could not launch the game: " + ex.Message, "Azaroth Installer", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
         };
+        var copyCreds = MkBtn("📋 Copy Credentials", Color.FromArgb(70, 75, 90));
+        copyCreds.Click += (s, e) =>
+        {
+            try
+            {
+                Clipboard.SetText(_summaryBox.Text);
+                MessageBox.Show(this, "Credentials and summary details copied to clipboard!", "Azaroth Installer", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch { }
+        };
         var open = MkBtn("📂  Open Install Folder", Color.FromArgb(60, 64, 76));
         open.Click += (s, e) =>
         {
-            try { Process.Start(new ProcessStartInfo { FileName = _installRoot, UseShellExecute = true }); }
+            try { Process.Start(new ProcessStartInfo { FileName = _installRoot ?? _layout?.ServerDir ?? "C:\\", UseShellExecute = true }); }
             catch { }
         };
         var exit = MkBtn("✖  Exit", Color.FromArgb(80, 40, 40));
@@ -1362,6 +1387,7 @@ public class WizardForm : Form
         row.Controls.Add(start);
         row.Controls.Add(play);
         row.Controls.Add(open);
+        row.Controls.Add(copyCreds);
         row.Controls.Add(exit);
         p.Controls.Add(row, 0, 2);
         _content.Controls.Add(p);

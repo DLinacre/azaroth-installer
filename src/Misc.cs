@@ -64,14 +64,8 @@ public static class Misc
     public static void AddFirewallRules(string serverName, int authPort, int realmPort, Action<string> log)
     {
         string ports = $"{authPort},{realmPort}";
-        var rules = new[]
-        {
-            $"{serverName} WoW Auth",
-            $"{serverName} WoW Realm/Realmlist"
-        };
-        // one rule covering both ports is enough for gameplay
         var (code, outp) = SqlUtil.RunShell("netsh",
-            $"advfirewall firewall add rule name=\"{serverName} (WoW server)\" dir=in action=allow protocol=TCP localport={ports} enable=yes");
-        log?.Invoke("firewall: " + (code == 0 ? "rule added (TCP " + ports + ")" : ("rule add reported: " + outp)));
+            $"advfirewall firewall add rule name=\"{serverName} (WoW LAN server)\" dir=in action=allow protocol=TCP localport={ports} remoteip=LocalSubnet enable=yes");
+        log?.Invoke("firewall: " + (code == 0 ? "LAN firewall rule added (TCP " + ports + " scoped to LocalSubnet)" : ("rule add reported: " + outp)));
     }
 }

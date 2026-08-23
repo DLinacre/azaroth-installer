@@ -1,5 +1,6 @@
-$dotnet = "C:\Users\KingL\.gemini\antigravity-ide\scratch\dotnet-sdk\dotnet.exe"
-$root = "c:\Users\KingL\.gemini\antigravity-ide\scratch\azaroth-installer"
+$root = $PSScriptRoot
+$dotnet = Get-Command "dotnet" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
+if (-not $dotnet) { $dotnet = "dotnet" }
 $repackBuildDir = Join-Path $root "repack_build"
 
 if (Test-Path $repackBuildDir) { Remove-Item $repackBuildDir -Recurse -Force }
