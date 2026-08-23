@@ -1,38 +1,17 @@
-<p align="center">
-  <img src="assets/banner.png" alt="Azaroth Core - One-Click Installer" width="100%">
-</p>
+![Azaroth Core - One-Click Installer](assets/banner.png)
 
-<h1 align="center">Azaroth Core — One-Click Installer</h1>
+# Azaroth Core — One-Click Installer
 
-<p align="center">
-  <strong>The complete private WotLK 3.3.5a world with PlayerBots — installed from a single <code>setup.exe</code>.</strong><br>
-  <strong>No terminal &nbsp;·&nbsp; No compiler &nbsp;·&nbsp; No developer skills</strong>
-</p>
+**The complete private WotLK 3.3.5a world with PlayerBots — installed from a single `setup.exe`.**  
+**No terminal · No compiler · No developer skills**
 
-<p align="center">
-  <a href="https://github.com/DLinacre/azaroth-installer/releases/latest">
-    <img alt="Download setup.exe" src="https://img.shields.io/badge/Download-setup.exe-2f9a5a?style=for-the-badge&logo=windows">
-  </a>
-  <a href="https://github.com/DLinacre/azaroth-installer/releases/latest">
-    <img alt="Latest release" src="https://img.shields.io/github/v/release/DLinacre/azaroth-installer?style=for-the-badge">
-  </a>
-  <a href="https://github.com/DLinacre/azaroth-installer/blob/main/LICENSE">
-    <img alt="MIT License" src="https://img.shields.io/badge/license-MIT-blue?style=for-the-badge">
-  </a>
-  <a href="https://github.com/DLinacre/azaroth-installer/blob/main/SECURITY.md">
-    <img alt="Security Policy" src="https://img.shields.io/badge/security-policy-brightgreen?style=for-the-badge">
-  </a>
-  <img alt=".NET 8" src="https://img.shields.io/badge/.NET-8-512BD4?style=for-the-badge&logo=.net">
-</p>
+[![Download setup.exe](https://img.shields.io/badge/Download-setup.exe-2f9a5a?style=for-the-badge&logo=windows)](https://github.com/DLinacre/azaroth-installer/releases/latest)
+[![Latest release](https://img.shields.io/github/v/release/DLinacre/azaroth-installer?style=for-the-badge)](https://github.com/DLinacre/azaroth-installer/releases/latest)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](https://github.com/DLinacre/azaroth-installer/blob/main/LICENSE)
+[![Security Policy](https://img.shields.io/badge/security-policy-brightgreen?style=for-the-badge)](https://github.com/DLinacre/azaroth-installer/blob/main/SECURITY.md)
+![.NET 8](https://img.shields.io/badge/.NET-8-512BD4?style=for-the-badge&logo=.net)
 
-<p align="center">
-  <a href="docs/CONFIG.md"><b>Configuration</b></a> •
-  <a href="docs/TROUBLESHOOTING.md"><b>Troubleshooting</b></a> •
-  <a href="#frequently-asked-questions"><b>FAQ</b></a> •
-  <a href="CONTRIBUTING.md"><b>Contributing</b></a> •
-  <a href="CHANGELOG.md"><b>Changelog</b></a> •
-  <a href="LICENSE"><b>MIT License</b></a>
-</p>
+[**Configuration**](docs/CONFIG.md) • [**Troubleshooting**](docs/TROUBLESHOOTING.md) • [**FAQ**](#frequently-asked-questions) • [**Contributing**](CONTRIBUTING.md) • [**Changelog**](CHANGELOG.md) • [**MIT License**](LICENSE)
 
 ---
 
