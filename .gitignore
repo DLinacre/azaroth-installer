@@ -1,0 +1,23 @@
+# build output
+bin/
+obj/
+dist/
+*.pdb
+*.user
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.swp
+
+# OS
+Thumbs.db
+.DS_Store
+
+# local secrets
+*.pfx
+*.snk
+
+# release artifacts (attach to GitHub Releases instead)
+Azaroth-Core-Installer-*.zip

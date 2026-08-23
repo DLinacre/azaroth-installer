@@ -1,0 +1,96 @@
+{
+  // ---------------------------------------------------------------------------
+  //  Azaroth Core - One-Click Installer configuration
+  //  Edit this file with Notepad (save as config.json next to setup.exe),
+  //  then run setup.exe again. Values here are the defaults the wizard shows;
+  //  everything can also be changed per-run inside the wizard.
+  // ---------------------------------------------------------------------------
+  "serverName": "Azaroth",
+  "installFolderName": "Azaroth Core",
+  "minFreeSpaceGB": 30,
+  "autoModeDefault": true,
+
+  "downloads": {
+    "serverRepack": {
+      // Direct HTTPS link(s) to a prebuilt WINDOWS AzerothCore + PlayerBots zip.
+      // Put your own Azaroth release zip link here if you have one.
+      // If this list is empty, the wizard asks you to pick a local .zip file.
+      "urls": []
+    },
+    "acData": {
+      // AzerothCore game data (dbc/maps/vmaps/mmaps).
+      // Only downloaded if the repack does not already include a data folder.
+      "urls": [
+        "https://github.com/wowgaming/client-data/releases/download/v20.0/Data.zip"
+      ],
+      "onlyIfMissing": true
+    },
+    "databaseServer": {
+      // Only used if the repack does NOT bundle MySQL/MariaDB and no local
+      // MySQL/MariaDB server is found on the machine.
+      "urls": [
+        "https://downloads.mysql.com/archives/get/p/23/file/mysql-8.0.42-winx64.msi"
+      ],
+      "onlyIfMissing": true
+    },
+    "playerBotsConf": {
+      // Downloaded only if the repack has no playerbots.conf of its own.
+      "urls": [
+        "https://raw.githubusercontent.com/mod-playerbots/mod-playerbots/master/conf/playerbots.conf.dist"
+      ]
+    }
+  },
+
+  "database": {
+    "login": "azaroth",
+    "password": "Azar0th!DB",
+    "rootLogin": "root",
+    "rootPassword": "",
+    "authDb": "azaroth_auth",
+    "charactersDb": "azaroth_characters",
+    "worldDb": "azaroth_world"
+  },
+
+  "server": {
+    "authAddress": "127.0.0.1",
+    "authPort": 3724,
+    "realmAddress": "127.0.0.1",
+    "realmPort": 8085,
+    "listenAddress": "0.0.0.0",
+    "maxPlayers": 500,
+    "gmUsername": "gm",
+    "gmPassword": "gm1234",
+    "gmCharacterName": "Azaroth",
+    "firewallRules": true
+  },
+
+  // World & Options step defaults (editable in the wizard too)
+  "world": {
+    "realmName": "Azaroth",
+    "clientLocale": "auto",
+    "xpRate": 1,
+    "honorRate": 1,
+    "goldRate": 1,
+    "levelCap": 80,
+    "randomBots": 100,
+    "botsAutologin": true,
+    "addClassPool": 25,
+    "maxAddedBots": 40,
+    "botGuilds": 0,
+    "botsOnlyWhenPlayerOnline": false,
+    "gmGenieAddon": true,
+    // Extra prebuilt modules: direct links to a .dll or .zip that gets dropped
+    // into the server folder. Only use files from sources you trust.
+    "extraModules": []
+  },
+
+  "playerBots": {
+    "enabled": true
+  },
+
+  "wowClient": {
+    "autoScan": true,
+    "extraScanDirs": [],
+    "downloadUrls": []
+  }
+}

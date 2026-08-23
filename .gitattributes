@@ -1,0 +1,17 @@
+# normalize text files
+*.cs text
+*.csproj text
+*.json text
+*.md text
+*.yml text
+*.yaml text
+*.ps1 text
+*.py text
+*.bat text
+
+# binaries
+*.png binary
+*.jpg binary
+*.ico binary
+*.exe binary
+*.zip binary
