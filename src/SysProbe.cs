@@ -77,7 +77,15 @@ public static class SysProbe
             foreach (ManagementObject o in s.Get())
             {
                 var g = new GpuInfo { Name = (o["Name"] as string) ?? "", DriverVersion = (o["DriverVersion"] as string) ?? "" };
-                if (o["AdapterRAM"] != null) { try { g.VideoBytes = Convert.ToInt64(o["AdapterRAM"]); } catch { } }
+                var regMem = GetGpuVramFromRegistry(g.Name);
+                if (regMem > 0)
+                {
+                    g.VideoBytes = regMem;
+                }
+                else if (o["AdapterRAM"] != null)
+                {
+                    try { g.VideoBytes = Convert.ToInt64(o["AdapterRAM"]); } catch { }
+                }
                 si.Gpus.Add(g);
             }
         }
@@ -293,6 +301,37 @@ public static class SysProbe
         catch (Exception ex) { log?.Invoke("Service scan failed: " + ex.Message); }
         return list;
     }
+
+    static long GetGpuVramFromRegistry(string gpuName)
+    {
+        try
+        {
+            using var baseKey = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}");
+            if (baseKey != null)
+            {
+                foreach (var subName in baseKey.GetSubKeyNames())
+                {
+                    if (!int.TryParse(subName, out _)) continue;
+                    using var subKey = baseKey.OpenSubKey(subName);
+                    if (subKey == null) continue;
+                    var driverDesc = subKey.GetValue("DriverDesc") as string;
+                    if (!string.IsNullOrEmpty(driverDesc) && (driverDesc.Contains(gpuName, StringComparison.OrdinalIgnoreCase) ||
+                        (!string.IsNullOrEmpty(gpuName) && gpuName.Contains(driverDesc, StringComparison.OrdinalIgnoreCase))))
+                    {
+                        var qwMem = subKey.GetValue("HardwareInformation.qwMemorySize");
+                        if (qwMem != null) return Convert.ToInt64(qwMem);
+                        var mem = subKey.GetValue("HardwareInformation.MemorySize");
+                        if (mem != null) return Convert.ToInt64(mem);
+                    }
+                }
+            }
+        }
+        catch { }
+        return 0;
+    }
+
+    public static Task<SystemInfo> CollectAsync(Action<string> log = null) =>
+        Task.Run(() => GetSystemInfo(log));
 
     static bool IsMatchDbName(this string s)
     {

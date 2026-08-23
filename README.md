@@ -10,8 +10,25 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/DLinacre/azaroth-installer/releases/latest">
+    <img alt="Download setup.exe" src="https://img.shields.io/badge/Download-setup.exe-2f9a5a?style=for-the-badge&logo=windows">
+  </a>
+  <a href="https://github.com/DLinacre/azaroth-installer/releases/latest">
+    <img alt="Latest release" src="https://img.shields.io/github/v/release/DLinacre/azaroth-installer?style=for-the-badge">
+  </a>
+  <a href="https://github.com/DLinacre/azaroth-installer/blob/main/LICENSE">
+    <img alt="MIT License" src="https://img.shields.io/badge/license-MIT-blue?style=for-the-badge">
+  </a>
+  <a href="https://github.com/DLinacre/azaroth-installer/blob/main/SECURITY.md">
+    <img alt="Security Policy" src="https://img.shields.io/badge/security-policy-brightgreen?style=for-the-badge">
+  </a>
+  <img alt=".NET 8" src="https://img.shields.io/badge/.NET-8-512BD4?style=for-the-badge&logo=.net">
+</p>
+
+<p align="center">
   <a href="docs/CONFIG.md"><b>Configuration</b></a> •
   <a href="docs/TROUBLESHOOTING.md"><b>Troubleshooting</b></a> •
+  <a href="#frequently-asked-questions"><b>FAQ</b></a> •
   <a href="CONTRIBUTING.md"><b>Contributing</b></a> •
   <a href="CHANGELOG.md"><b>Changelog</b></a> •
   <a href="LICENSE"><b>MIT License</b></a>
@@ -27,13 +44,12 @@
 (randombots, AddClass pool, altbots) — packaged so that a *regular person* can run it
 on their own PC:
 
-1. Download **`setup.exe`** from the [Releases](https://github.com/DLinacre/azaroth-installer/releases) page (or grab the zip).
-2. Double-click it. Approve the UAC prompt.
+1. Download **`setup.exe`** from the [Releases](https://github.com/DLinacre/azaroth-installer/releases) page.
+2. Double-click it. Approve the Windows UAC elevation prompt.
 3. Click **⚡ Full Auto Install** and go get a coffee.
 
 When it finishes you have **Start Azaroth Server** / **Play Azaroth** desktop shortcuts,
-a ready **GM account** (`gm` / `gm1234`) with a starter character, a firewall rule, and a
-server that was **boot-verified before the wizard closed**.
+a ready **GM account** with a **cryptographically randomized password generated during installation** (shown once on the Done screen and saved in the install folder), a local-subnet firewall rule, and a server stack that is **boot-verified before the wizard completes**.
 
 > ⚠️ **Personal/private use.** Running a private World of Warcraft server and using bots
 > can violate Blizzard's Terms of Use. The server emulator is open source and this
@@ -175,6 +191,18 @@ attached to [Releases](https://github.com/DLinacre/azaroth-installer/releases).
 - [**MySQL**](https://www.mysql.com) / [**MariaDB**](https://mariadb.org) — database engines
 - The WoW private-server community (OwnedCore, DrePack, ACBS and other repacks that this layout-detection logic was shaped against)
 
+## Frequently asked questions
+
+**Is this legal?** The installer is open source (MIT) and never redistributes Blizzard game files — it reuses the 3.3.5a client you already own. Running a private WoW server can violate Blizzard's EULA/ToU; use it privately and non-commercially at your own risk. See [Legal](#legal).
+
+**Why does SmartScreen warn me?** The build isn't Authenticode code-signed yet (common for community open source tools). Click **More info → Run anyway**, and verify the [SHA-256 checksum](https://github.com/DLinacre/azaroth-installer/releases/latest) on the release page.
+
+**Can I play with friends?** Yes — enable **LAN play** in the wizard; it binds to your LAN IP and adds a local-subnet scoped firewall rule.
+
+**What if I have no repack zip?** The wizard is repack-agnostic and accepts any prebuilt Windows AzerothCore 3.3.5a zip. Put a direct HTTPS link in `config.json → downloads.serverRepack.urls` or pick a local `.zip` at the Server Core step.
+
+**Will reinstalling wipe my characters?** No. The installer detects an existing install and reuses the `azaroth_*` databases; characters survive re-runs. Use "re-import database files" only if you deliberately want a clean reset.
+
 ## Legal
 
 - This project is **for private, non-commercial use at your own risk**. Running a
@@ -189,3 +217,4 @@ attached to [Releases](https://github.com/DLinacre/azaroth-installer/releases).
 ## License
 
 [MIT](LICENSE) — do whatever you want, no warranty, keep the license header.
+

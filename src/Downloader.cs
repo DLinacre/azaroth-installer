@@ -7,13 +7,30 @@ public class DownloadProgress
     public string Url = "";
     public string File = "";
 
+    public string EtaText
+    {
+        get
+        {
+            if (Total <= 0 || SpeedMbs <= 0.05) return "";
+            var remainingBytes = Total - Received;
+            if (remainingBytes <= 0) return "0s";
+            var secs = remainingBytes / (SpeedMbs * 1048576.0);
+            if (secs < 60) return $"{secs:0}s left";
+            var mins = (int)(secs / 60);
+            var remSecs = (int)(secs % 60);
+            return $"{mins}m {remSecs}s left";
+        }
+    }
+
     public string PercentText
     {
         get
         {
+            var eta = EtaText;
+            var etaSuffix = string.IsNullOrEmpty(eta) ? "" : $"  ·  {eta}";
             if (Total <= 0) return $"{Received / 1048576.0:0.#} MB";
             return $"{Received / 1048576.0:0.#} / {Total / 1048576.0:0.#} MB ({Received * 100 / Total}%)" +
-                   $"  @ {SpeedMbs:0.#} MB/s";
+                   $"  @ {SpeedMbs:0.#} MB/s{etaSuffix}";
         }
     }
 
@@ -99,19 +116,61 @@ public static class Downloader
 
     static async Task DownloadOneAsync(string url, string destFile, IProgress<DownloadProgress> progress, CancellationToken ct)
     {
-        using var resp = await Http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, ct);
-        if (!resp.IsSuccessStatusCode)
-            throw new Exception($"HTTP {(int)resp.StatusCode} {resp.StatusCode} for {url}");
-
-        var total = resp.Content.Headers.ContentLength ?? -1;
         var dir = Path.GetDirectoryName(Path.GetFullPath(destFile));
         if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
         var tmp = destFile + ".part";
 
-        long received = 0;
-        var p = new DownloadProgress { Total = total, Url = url, File = Path.GetFileName(destFile) };
+        long existingLength = 0;
+        if (File.Exists(tmp))
+        {
+            try { existingLength = new FileInfo(tmp).Length; } catch { existingLength = 0; }
+        }
+
+        using var req = new HttpRequestMessage(HttpMethod.Get, url);
+        if (existingLength > 0)
+        {
+            req.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(existingLength, null);
+        }
+
+        using var resp = await Http.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, ct);
+        bool isPartial = resp.StatusCode == System.Net.HttpStatusCode.PartialContent;
+        if (!resp.IsSuccessStatusCode && !isPartial)
+        {
+            if (existingLength > 0)
+            {
+                try { File.Delete(tmp); } catch { }
+                existingLength = 0;
+                using var freshResp = await Http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, ct);
+                if (!freshResp.IsSuccessStatusCode)
+                    throw new Exception($"HTTP {(int)freshResp.StatusCode} {freshResp.StatusCode} for {url}");
+                await SaveResponseStream(freshResp, tmp, destFile, 0, url, progress, ct);
+                return;
+            }
+            throw new Exception($"HTTP {(int)resp.StatusCode} {resp.StatusCode} for {url}");
+        }
+
+        await SaveResponseStream(resp, tmp, destFile, existingLength, url, progress, ct);
+    }
+
+    static async Task SaveResponseStream(HttpResponseMessage resp, string tmp, string destFile, long existingLength, string url, IProgress<DownloadProgress> progress, CancellationToken ct)
+    {
+        bool isPartial = resp.StatusCode == System.Net.HttpStatusCode.PartialContent;
+        long total = -1;
+        if (isPartial && resp.Content.Headers.ContentRange?.Length != null)
+        {
+            total = resp.Content.Headers.ContentRange.Length.Value;
+        }
+        else if (resp.Content.Headers.ContentLength.HasValue)
+        {
+            total = isPartial ? (existingLength + resp.Content.Headers.ContentLength.Value) : resp.Content.Headers.ContentLength.Value;
+        }
+
+        var fileMode = isPartial && existingLength > 0 ? FileMode.Append : FileMode.Create;
+        long received = isPartial ? existingLength : 0;
+        var p = new DownloadProgress { Total = total, Url = url, File = Path.GetFileName(destFile), Received = received };
+
         using (var stream = await resp.Content.ReadAsStreamAsync(ct))
-        using (var fs = new FileStream(tmp, FileMode.Create, FileAccess.Write, FileShare.None, 262144, true))
+        using (var fs = new FileStream(tmp, fileMode, FileAccess.Write, FileShare.None, 262144, true))
         {
             var buf = new byte[131072];
             long lastReport = 0;

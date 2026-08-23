@@ -15,18 +15,20 @@ if ($runningProc) {
     }
 }
 
-$dotnetExe = Get-Command "dotnet" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
-if (-not $dotnetExe -or -not (Test-Path $dotnetExe)) {
-    $candidates = @(
-        (Join-Path (Split-Path -Parent $root) "dotnet-sdk\dotnet.exe"),
-        "$env:LOCALAPPDATA\Microsoft\dotnet\dotnet.exe",
-        "$env:ProgramFiles\dotnet\dotnet.exe"
-    )
-    foreach ($c in $candidates) {
-        if (Test-Path $c) { $dotnetExe = $c; break }
-    }
+$dotnetCandidates = @(
+    (Join-Path (Split-Path -Parent $root) "dotnet-sdk\dotnet.exe"),
+    (Get-Command "dotnet" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source),
+    "$env:LOCALAPPDATA\Microsoft\dotnet\dotnet.exe",
+    "$env:ProgramFiles\dotnet\dotnet.exe"
+) | Where-Object { $_ -and (Test-Path $_) }
+
+$dotnetExe = "dotnet"
+foreach ($c in $dotnetCandidates) {
+    try {
+        $sdks = & $c --list-sdks 2>$null
+        if ($sdks) { $dotnetExe = $c; break }
+    } catch { }
 }
-if (-not $dotnetExe) { $dotnetExe = "dotnet" }
 
 Write-Host "Publishing Azaroth Core One-Click Installer (win-x64)..." -ForegroundColor Cyan
 & $dotnetExe publish (Join-Path $root "src") -c Release -r win-x64 --self-contained true `
