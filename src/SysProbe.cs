@@ -205,7 +205,7 @@ public static class SysProbe
                 if (sl.StartsWith(".") || sl.StartsWith("$") || sl == "system volume information" ||
                     sl == "perflogs" || sl == "windows" || sl == "recovery" || sl == "users")
                     continue;
-                if (depth >= 2 && !(DescendNames.Contains(s) || WowNames.Contains(s) ||
+                if (depth >= 2 && !(DescendNames.Contains(sl) || WowNames.Contains(sl) ||
                     sl.Contains("wow") || sl.Contains("warcraft")))
                     continue;
                 Walk(s, depth + 1);

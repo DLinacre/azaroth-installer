@@ -18,9 +18,10 @@ internal static class Program
         {
             try
             {
+                var exePath = Environment.ProcessPath ?? Application.ExecutablePath;
                 var psi = new ProcessStartInfo
                 {
-                    FileName = Application.ExecutablePath,
+                    FileName = exePath,
                     UseShellExecute = true,
                     Verb = "runas",
                     Arguments = string.Join(" ", args.Select(a => a.Contains(' ') ? $"\"{a}\"" : a))

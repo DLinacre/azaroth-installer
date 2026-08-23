@@ -21,3 +21,8 @@ Thumbs.db
 
 # release artifacts (attach to GitHub Releases instead)
 Azaroth-Core-Installer-*.zip
+src/*.zip
+repack_build/
+.github/workflows/
+
+

@@ -24,18 +24,25 @@ public class DownloadProgress
     public void Tick()
     {
         var now = Environment.TickCount64;
-        if (_lastTicks > 0 && now > _lastTicks + 500)
+        if (_lastTicks == 0)
         {
-            double secs = (now - _lastTicks) / 1000.0;
+            _lastTicks = now;
+            _lastBytes = Received;
+            return;
+        }
+        long deltaMs = now - _lastTicks;
+        if (deltaMs >= 400)
+        {
+            double secs = deltaMs / 1000.0;
             double mb = (Received - _lastBytes) / 1048576.0;
-            if (secs > 0)
+            if (secs > 0 && mb >= 0)
             {
                 double inst = mb / secs;
                 _lastSpeed = _lastSpeed == 0 ? inst : _lastSpeed * 0.6 + inst * 0.4;
             }
+            _lastBytes = Received;
+            _lastTicks = now;
         }
-        _lastBytes = Received;
-        _lastTicks = now;
     }
 
     public double SpeedMbs => _lastSpeed;
@@ -54,7 +61,7 @@ public static class Downloader
             AllowAutoRedirect = true
         };
         var c = new HttpClient(handler) { Timeout = Timeout.InfiniteTimeSpan };
-        c.DefaultRequestHeaders.UserAgent.ParseAdd("AzarothCoreInstaller/1.0");
+        c.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36");
         c.DefaultRequestHeaders.Accept.ParseAdd("*/*");
         return c;
     }
@@ -102,6 +109,7 @@ public static class Downloader
         var tmp = destFile + ".part";
 
         long received = 0;
+        var p = new DownloadProgress { Total = total, Url = url, File = Path.GetFileName(destFile) };
         using (var stream = await resp.Content.ReadAsStreamAsync(ct))
         using (var fs = new FileStream(tmp, FileMode.Create, FileAccess.Write, FileShare.None, 262144, true))
         {
@@ -116,13 +124,14 @@ public static class Downloader
                 if (now - lastReport > 250)
                 {
                     lastReport = now;
-                    var p = new DownloadProgress { Received = received, Total = total, Url = url, File = Path.GetFileName(destFile) };
+                    p.Received = received;
                     p.Tick();
                     progress?.Report(p);
                 }
             }
         }
-        progress?.Report(new DownloadProgress { Received = total >= 0 ? total : received, Total = total, Url = url, File = Path.GetFileName(destFile) });
+        p.Received = total >= 0 ? total : received;
+        progress?.Report(p);
         if (File.Exists(destFile)) File.Delete(destFile);
         File.Move(tmp, destFile);
     }

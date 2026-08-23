@@ -15,7 +15,7 @@ can still be changed per-run in the UI.
   "downloads": {
     "serverRepack":   { "urls": [] },
     "acData":         { "urls": [ "https://github.com/wowgaming/client-data/releases/download/v20.0/Data.zip" ], "onlyIfMissing": true },
-    "databaseServer": { "urls": [ "https://downloads.mysql.com/archives/get/p/23/file/mysql-8.0.42-winx64.msi" ], "onlyIfMissing": true },
+    "databaseServer": { "urls": [ "https://cdn.mysql.com/Downloads/MySQL-8.0/mysql-8.0.42-winx64.msi" ], "onlyIfMissing": true },
     "playerBotsConf": { "urls": [ "https://raw.githubusercontent.com/mod-playerbots/mod-playerbots/master/conf/playerbots.conf.dist" ] }
   },
 

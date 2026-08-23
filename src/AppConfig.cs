@@ -72,8 +72,9 @@ public class DownloadsConfig
     {
         Urls = new List<string>
         {
-            "https://downloads.mysql.com/archives/get/p/23/file/mysql-8.0.42-winx64.msi",
-            "https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-8.0.42-winx64.msi"
+            "https://cdn.mysql.com/Downloads/MySQL-8.0/mysql-8.0.42-winx64.msi",
+            "https://downloads.mariadb.com/MariaDB/mariadb-10.11.8/winx64-packages/mariadb-10.11.8-winx64.msi",
+            "https://archive.mariadb.org/mariadb-10.11.8/winx64-packages/mariadb-10.11.8-winx64.msi"
         },
         OnlyIfMissing = true
     };

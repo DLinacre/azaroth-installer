@@ -31,6 +31,13 @@ public class ServerBuilder
             return localZipPath;
         }
 
+        var candidates = FindLocalRepackZips(InstallRoot);
+        if (candidates.Count > 0)
+        {
+            Log("Auto-detected local repack zip: " + candidates[0]);
+            return candidates[0];
+        }
+
         var urls = new List<string>();
         if (!string.IsNullOrWhiteSpace(urlOverride)) urls.Add(urlOverride.Trim());
         if (Cfg.Downloads.ServerRepack != null) urls.AddRange(Cfg.Downloads.ServerRepack.Urls);
@@ -44,6 +51,33 @@ public class ServerBuilder
         Log("Downloaded repack (" + (new FileInfo(path).Length / 1048576.0) + " MB)");
         return path;
     }
+
+    public static List<string> FindLocalRepackZips(string searchDir = null)
+    {
+        var dirs = new List<string>();
+        if (!string.IsNullOrEmpty(searchDir) && Directory.Exists(searchDir)) dirs.Add(searchDir);
+        dirs.Add(AppDomain.CurrentDomain.BaseDirectory);
+        dirs.Add(Environment.CurrentDirectory);
+
+        var result = new List<string>();
+        foreach (var dir in dirs.Distinct())
+        {
+            try
+            {
+                foreach (var z in Directory.GetFiles(dir, "*.zip"))
+                {
+                    var name = Path.GetFileName(z);
+                    if (name.StartsWith("Azaroth-Core-Installer", StringComparison.OrdinalIgnoreCase) ||
+                        name.StartsWith("workspace", StringComparison.OrdinalIgnoreCase))
+                        continue;
+                    result.Add(z);
+                }
+            }
+            catch { }
+        }
+        return result.Distinct().ToList();
+    }
+
 
     // ===================================================== extract + find layout
     public ServerLayout PrepareLayout(string repackZip)

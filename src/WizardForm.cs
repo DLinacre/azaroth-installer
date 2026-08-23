@@ -82,11 +82,11 @@ public class WizardForm : Form
 
         Text = "Azaroth Core - One-Click Installer";
         try { Icon = System.Drawing.Icon.ExtractAssociatedIcon(Application.ExecutablePath); } catch { }
-        Width = 1020;
-        Height = 720;
-        MinimumSize = new Size(900, 640);
+        Width = 1080;
+        Height = 740;
+        MinimumSize = new Size(960, 680);
         StartPosition = FormStartPosition.CenterScreen;
-        BackColor = Color.FromArgb(24, 26, 32);
+        BackColor = Color.FromArgb(18, 20, 26);
         ForeColor = Color.Gainsboro;
         Font = new Font("Segoe UI", 9.5f);
 
@@ -102,19 +102,19 @@ public class WizardForm : Form
     // ================================================================== ui
     void BuildUi()
     {
-        var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3, Padding = new Padding(10) };
+        var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3, Padding = new Padding(12) };
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 46));
         root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 168));
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 126));
 
         // header
         var header = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1 };
         header.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-        header.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 130));
+        header.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150));
         var title = new Label
         {
             Text = "⚔  Azaroth Core — One-Click Installer",
-            Font = new Font("Segoe UI", 14f, FontStyle.Bold),
+            Font = new Font("Segoe UI", 13.5f, FontStyle.Bold),
             ForeColor = Color.FromArgb(255, 196, 87),
             Dock = DockStyle.Fill,
             TextAlign = ContentAlignment.MiddleLeft
@@ -131,7 +131,7 @@ public class WizardForm : Form
 
         // body: nav + content
         var body = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1 };
-        body.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 205));
+        body.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 210));
         body.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
 
         var nav = new FlowLayoutPanel
@@ -139,7 +139,9 @@ public class WizardForm : Form
             Dock = DockStyle.Fill,
             FlowDirection = FlowDirection.TopDown,
             WrapContents = false,
-            AutoScroll = true
+            AutoScroll = true,
+            BackColor = Color.FromArgb(24, 27, 36),
+            Padding = new Padding(4)
         };
         _navLabels = new Label[_stepTitles.Length];
         for (int i = 0; i < _stepTitles.Length; i++)
@@ -149,14 +151,14 @@ public class WizardForm : Form
             {
                 Text = (i + 1) + ".  " + _stepTitles[i],
                 AutoSize = false,
-                Width = 190,
-                Height = 30,
+                Width = 195,
+                Height = 32,
                 TextAlign = ContentAlignment.MiddleLeft,
-                Padding = new Padding(8, 0, 0, 0),
-                BackColor = Color.FromArgb(32, 35, 44),
+                Padding = new Padding(10, 0, 0, 0),
+                BackColor = Color.FromArgb(32, 35, 46),
                 ForeColor = Color.Silver,
                 Cursor = Cursors.Hand,
-                Margin = new Padding(0, 3, 0, 3)
+                Margin = new Padding(0, 2, 0, 2)
             };
             lbl.Click += (s, e) =>
             {
@@ -167,15 +169,15 @@ public class WizardForm : Form
             nav.Controls.Add(lbl);
         }
 
-        _content = new Panel { Dock = DockStyle.Fill, AutoScroll = true, Padding = new Padding(14, 4, 14, 4) };
+        _content = new Panel { Dock = DockStyle.Fill, AutoScroll = true, Padding = new Padding(12, 2, 12, 2) };
 
         body.Controls.Add(nav, 0, 0);
         body.Controls.Add(_content, 1, 0);
 
         // footer
         var footer = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3 };
-        footer.RowStyles.Add(new RowStyle(SizeType.Absolute, 24));
-        footer.RowStyles.Add(new RowStyle(SizeType.Absolute, 74));
+        footer.RowStyles.Add(new RowStyle(SizeType.Absolute, 22));
+        footer.RowStyles.Add(new RowStyle(SizeType.Absolute, 56));
         footer.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
 
         var topRow = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2 };
@@ -198,17 +200,17 @@ public class WizardForm : Form
             ReadOnly = true,
             ScrollBars = ScrollBars.Vertical,
             Dock = DockStyle.Fill,
-            BackColor = Color.FromArgb(12, 13, 17),
-            ForeColor = Color.FromArgb(140, 200, 140),
+            BackColor = Color.FromArgb(12, 14, 18),
+            ForeColor = Color.FromArgb(140, 210, 140),
             Font = new Font("Consolas", 8.5f)
         };
 
         var btns = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.RightToLeft, Padding = new Padding(0, 4, 0, 0) };
         _cancelBtn = MkBtn("✖ Cancel", Color.FromArgb(170, 70, 70));
         _cancelBtn.Click += (s, e) => { if (_busy) { _cts.Cancel(); AddLog("Cancelling..."); } };
-        _autoBtn = MkBtn("⚡ Full Auto Install", Color.FromArgb(38, 110, 60));
+        _autoBtn = MkBtn("⚡ Full Auto Install", Color.FromArgb(35, 135, 70));
         _autoBtn.Click += async (s, e) => await RunAutoInstallAsync();
-        _nextBtn = MkBtn("Next  ▶", Color.FromArgb(40, 90, 160));
+        _nextBtn = MkBtn("Next  ▶", Color.FromArgb(35, 105, 190));
         _nextBtn.Click += (s, e) => OnNext();
         _backBtn = MkBtn("◀  Back", Color.FromArgb(60, 64, 76));
         _backBtn.Click += (s, e) => { if (!_busy && _step > 0) ShowStep(_step - 1); };
@@ -238,17 +240,20 @@ public class WizardForm : Form
 
     Button MkBtn(string text, Color color)
     {
-        return new Button
+        var b = new Button
         {
             Text = text,
-            Width = 150,
-            Height = 34,
+            Width = 155,
+            Height = 36,
             FlatStyle = FlatStyle.Flat,
             BackColor = color,
             ForeColor = Color.White,
             Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
-            Margin = new Padding(6, 2, 0, 2)
+            Margin = new Padding(4, 2, 4, 2),
+            Cursor = Cursors.Hand
         };
+        b.FlatAppearance.BorderSize = 0;
+        return b;
     }
 
     void SetBusy(bool busy)
@@ -312,9 +317,10 @@ public class WizardForm : Form
         for (int i = 0; i < _navLabels.Length; i++)
         {
             _navLabels[i].Text = (i < step ? "✓ " : (i + 1) + ".  ") + _stepTitles[i];
-            _navLabels[i].ForeColor = i == step ? Color.FromArgb(255, 196, 87)
-                : (i < step ? Color.FromArgb(120, 200, 120) : Color.Silver);
-            _navLabels[i].BackColor = i == step ? Color.FromArgb(45, 48, 60) : Color.FromArgb(32, 35, 44);
+            _navLabels[i].ForeColor = i == step ? Color.FromArgb(255, 200, 85)
+                : (i < step ? Color.FromArgb(130, 215, 130) : Color.FromArgb(160, 165, 180));
+            _navLabels[i].BackColor = i == step ? Color.FromArgb(48, 54, 72)
+                : (i < step ? Color.FromArgb(26, 32, 44) : Color.FromArgb(24, 27, 36));
         }
 
         _autoBtn.Visible = step == 0;
@@ -455,14 +461,17 @@ public class WizardForm : Form
     // ------------------------------------------------------------- step 2
     void BuildLocation()
     {
-        var p = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 6 };
-        p.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
-        p.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
-        p.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
-        p.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
+        var p = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3 };
+        p.RowStyles.Add(new RowStyle(SizeType.Absolute, 32));
+        p.RowStyles.Add(new RowStyle(SizeType.Absolute, 185));
         p.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-        p.RowStyles.Add(new RowStyle(SizeType.Absolute, 50));
         p.Controls.Add(Heading("Where should Azaroth Core be installed?"), 0, 0);
+
+        var cardBox = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 4, Padding = new Padding(6) };
+        cardBox.RowStyles.Add(new RowStyle(SizeType.Absolute, 36));
+        cardBox.RowStyles.Add(new RowStyle(SizeType.Absolute, 36));
+        cardBox.RowStyles.Add(new RowStyle(SizeType.Absolute, 36));
+        cardBox.RowStyles.Add(new RowStyle(SizeType.Absolute, 36));
 
         _driveCombo = new ComboBox { Dock = DockStyle.Fill, DropDownStyle = ComboBoxStyle.DropDownList };
         if (_sys != null)
@@ -471,16 +480,17 @@ public class WizardForm : Form
                 _driveCombo.Items.Add($"{d.Root}   -   {d.FreeText}" + (d.IsSystem ? "  [system]" : ""));
         }
         SelectBestDrive();
-        p.Controls.Add(Row("Drive (auto-picked the one with the most free space):", _driveCombo), 0, 1);
+        cardBox.Controls.Add(Row("Drive (auto-picked most free space):", _driveCombo), 0, 0);
 
         _folderBox = new TextBox { Dock = DockStyle.Fill, Text = _cfg.InstallFolderName };
-        p.Controls.Add(Row("Folder name:", _folderBox), 0, 2);
+        cardBox.Controls.Add(Row("Folder name:", _folderBox), 0, 1);
 
-        _fullPathLabel = new Label { Dock = DockStyle.Fill, ForeColor = Color.FromArgb(160, 220, 160), Text = "" };
-        p.Controls.Add(Row("Full path:", _fullPathLabel), 0, 3);
+        _fullPathLabel = new Label { Dock = DockStyle.Fill, ForeColor = Color.FromArgb(160, 220, 160), Text = "", TextAlign = ContentAlignment.MiddleLeft };
+        cardBox.Controls.Add(Row("Full target path:", _fullPathLabel), 0, 2);
 
-        var spaceOk = new Label { Dock = DockStyle.Fill, AutoSize = true };
-        p.Controls.Add(Row("Needs at least " + _cfg.MinFreeSpaceGB + " GB free:", spaceOk), 0, 4);
+        var spaceOk = new Label { Dock = DockStyle.Fill, AutoSize = true, TextAlign = ContentAlignment.MiddleLeft };
+        cardBox.Controls.Add(Row("Free space requirement (" + _cfg.MinFreeSpaceGB + " GB):", spaceOk), 0, 3);
+
         void Refresh()
         {
             if (_driveCombo == null || _driveCombo.SelectedItem == null || _sys == null) return;
@@ -489,19 +499,24 @@ public class WizardForm : Form
             _installRoot = Path.Combine(d.Root, folder);
             _fullPathLabel.Text = _installRoot;
             bool ok = d.FreeBytes >= _cfg.MinFreeSpaceGB * 1073741824;
-            spaceOk.Text = ok ? "✓ " + d.FreeText + " - plenty of space" : "✗ only " + d.FreeText + " free - not enough!";
-            spaceOk.ForeColor = ok ? Color.FromArgb(120, 220, 120) : Color.OrangeRed;
+            spaceOk.Text = ok ? "✓ " + d.FreeText + " — plenty of space" : "✗ only " + d.FreeText + " free — not enough!";
+            spaceOk.ForeColor = ok ? Color.FromArgb(130, 220, 130) : Color.OrangeRed;
         }
         _driveCombo.SelectedIndexChanged += (s, e) => Refresh();
         _folderBox.TextChanged += (s, e) => Refresh();
         Refresh();
 
-        p.Controls.Add(new Label
+        p.Controls.Add(Card("Target Drive & Directory", cardBox), 0, 1);
+
+        var tipLabel = new Label
         {
             Dock = DockStyle.Fill,
             ForeColor = Color.Silver,
-            Text = "Tip: a drive other than C: is often better - game data and databases are large and you can wipe\nthem without touching Windows. Your existing WoW client is NOT moved or modified."
-        }, 0, 5);
+            Padding = new Padding(4, 12, 4, 4),
+            Text = "💡 Tip: A dedicated game or data drive (other than C:) is ideal for server files and database storage.\n" +
+                   "Your existing WoW game client will NOT be moved or modified."
+        };
+        p.Controls.Add(tipLabel, 0, 2);
         _content.Controls.Add(p);
     }
 
@@ -540,6 +555,12 @@ public class WizardForm : Form
         _urlBox = new TextBox { Dock = DockStyle.Fill };
         _urlBox.Text = _cfg.Downloads.ServerRepack?.Urls?.FirstOrDefault() ?? "";
         p.Controls.Add(Row("Direct download URL (optional):", _urlBox), 0, 1);
+
+        if (string.IsNullOrEmpty(_repackZipLocal))
+        {
+            var candidates = ServerBuilder.FindLocalRepackZips(_installRoot);
+            if (candidates.Count > 0) _repackZipLocal = candidates[0];
+        }
 
         var browse = new Button { Text = "Browse for .zip ...", Width = 175, Height = 30, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(60, 64, 76), ForeColor = Color.White };
         _localZipLabel = new Label { Dock = DockStyle.Fill, ForeColor = Color.Silver, Text = string.IsNullOrEmpty(_repackZipLocal) ? "(none yet - a local zip works too)" : _repackZipLocal, AutoEllipsis = true };
@@ -614,6 +635,27 @@ public class WizardForm : Form
         if (string.IsNullOrEmpty(_installRoot)) throw new Exception("Choose an install location first.");
         var b = NewBuilder();
         SetStatus("Preparing server core...");
+
+        if (string.IsNullOrWhiteSpace(_repackZipLocal) &&
+            string.IsNullOrWhiteSpace(_urlBox?.Text) &&
+            (_cfg.Downloads.ServerRepack?.Urls == null || _cfg.Downloads.ServerRepack.Urls.Count == 0))
+        {
+            var candidates = ServerBuilder.FindLocalRepackZips(_installRoot);
+            if (candidates.Count > 0)
+            {
+                _repackZipLocal = candidates[0];
+            }
+            else
+            {
+                MessageBox.Show(this,
+                    "Please pick your AzerothCore / PlayerBots server .zip file using the 'Browse for .zip ...' button, " +
+                    "or paste a direct download URL into the text box above.",
+                    "Azaroth Installer - Repack Required", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                SetStatus("Please select a repack .zip file or paste a download URL.", Color.OrangeRed);
+                return;
+            }
+        }
+
         var zip = await b.GetRepackZipAsync(_repackZipLocal, _urlBox?.Text);
         _layout = await Task.Run(() => b.PrepareLayout(zip));
         SetStatus("Server core prepared: " + _layout.ServerDir, Color.FromArgb(120, 220, 120));
@@ -700,46 +742,48 @@ public class WizardForm : Form
     // ------------------------------------------------------------- step 5
     void BuildDatabase()
     {
-        var p = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 5 };
-        p.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
-        p.RowStyles.Add(new RowStyle(SizeType.Absolute, 44));
-        p.RowStyles.Add(new RowStyle(SizeType.Absolute, 50));
-        p.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
+        var p = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3 };
+        p.RowStyles.Add(new RowStyle(SizeType.Absolute, 32));
+        p.RowStyles.Add(new RowStyle(SizeType.Absolute, 85));
         p.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
         p.Controls.Add(Heading("Database (MySQL / MariaDB)"), 0, 0);
 
+        var actionBox = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.LeftToRight, WrapContents = true, Padding = new Padding(6) };
         var run = new Button
         {
             Text = "🗄  Set Up Database",
-            Height = 34, Width = 240, FlatStyle = FlatStyle.Flat,
-            BackColor = Color.FromArgb(40, 90, 160), ForeColor = Color.White,
-            Font = new Font("Segoe UI", 9.5f, FontStyle.Bold)
+            Height = 36, Width = 220, FlatStyle = FlatStyle.Flat,
+            BackColor = Color.FromArgb(35, 105, 190), ForeColor = Color.White,
+            Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
+            Cursor = Cursors.Hand, Margin = new Padding(0, 2, 16, 2)
         };
+        run.FlatAppearance.BorderSize = 0;
         run.Click += (s, e) => _ = RunStepActionAsync(async () =>
         {
             _db = null;
             await SetupDbAsync(_forceDb?.Checked == true);
             if (IsHandleCreated) { _content.Controls.Clear(); ShowStep(5); }
         });
-        p.Controls.Add(run, 0, 1);
 
         _forceDb = new CheckBox
         {
-            Text = "re-import database files (warning: resets characters - only for broken installs)",
-            ForeColor = Color.Silver, AutoSize = true, Margin = new Padding(0, 8, 0, 0)
+            Text = "re-import database files (resets characters - only for broken installs)",
+            ForeColor = Color.Silver, AutoSize = true, Margin = new Padding(0, 10, 0, 0)
         };
-        p.Controls.Add(_forceDb, 0, 2);
 
-        p.Controls.Add(Heading("Result", small: true), 0, 3);
+        actionBox.Controls.Add(run);
+        actionBox.Controls.Add(_forceDb);
+        p.Controls.Add(Card("Database Actions", actionBox), 0, 1);
+
         _dbStatus = new TextBox
         {
             Multiline = true, ReadOnly = true, Dock = DockStyle.Fill,
-            BackColor = Color.FromArgb(32, 35, 44), ForeColor = Color.Gainsboro,
-            Font = new Font("Consolas", 9f),
-            Text = _db == null ? "Not set up yet - click the button above." :
-                $"Source:     {_db.Source}\nLogin:      {_db.Login}\nPassword:   {_db.Password}\nDatabases:  {_cfg.Database.AuthDb} / {_cfg.Database.CharactersDb} / {_cfg.Database.WorldDb}\n{_db.Note}"
+            BackColor = Color.FromArgb(22, 25, 34), ForeColor = _db != null ? Color.FromArgb(140, 215, 140) : Color.Gainsboro,
+            Font = new Font("Consolas", 9.5f),
+            Text = _db == null ? "Not set up yet — click 'Set Up Database' above to detect or initialize MySQL/MariaDB." :
+                $"Source    : {_db.Source}\r\nLogin     : {_db.Login}\r\nPassword  : {_db.Password}\r\nDatabases : {_cfg.Database.AuthDb} / {_cfg.Database.CharactersDb} / {_cfg.Database.WorldDb}\r\n\r\n{_db.Note}"
         };
-        p.Controls.Add(_dbStatus, 0, 4);
+        p.Controls.Add(Card("Database Status & Connection Info", _dbStatus), 0, 2);
         _content.Controls.Add(p);
     }
 
@@ -879,12 +923,12 @@ public class WizardForm : Form
         _modules = _layout != null ? b.DetectModules(_layout) : new List<ModuleInfo>();
 
         var p = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 6 };
-        p.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
-        p.RowStyles.Add(new RowStyle(SizeType.Absolute, 130));
-        p.RowStyles.Add(new RowStyle(SizeType.Absolute, 100));
-        p.RowStyles.Add(new RowStyle(SizeType.Absolute, 150));
+        p.RowStyles.Add(new RowStyle(SizeType.Absolute, 32));
+        p.RowStyles.Add(new RowStyle(SizeType.Absolute, 105));
+        p.RowStyles.Add(new RowStyle(SizeType.Absolute, 95));
+        p.RowStyles.Add(new RowStyle(SizeType.Absolute, 135));
         p.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-        p.RowStyles.Add(new RowStyle(SizeType.Absolute, 150));
+        p.RowStyles.Add(new RowStyle(SizeType.Absolute, 125));
         p.Controls.Add(Heading("World & Options — make the realm yours"), 0, 0);
 
         // ------------------------------------------------ realm card
@@ -1069,19 +1113,20 @@ public class WizardForm : Form
 
     Control Card(string title, Control body)
     {
-        var t = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 2, Margin = new Padding(0, 4, 0, 8) };
-        t.RowStyles.Add(new RowStyle(SizeType.Absolute, 22));
+        var t = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 2, Margin = new Padding(0, 2, 0, 6) };
+        t.RowStyles.Add(new RowStyle(SizeType.Absolute, 26));
         t.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
         var lbl = new Label
         {
-            Text = title,
+            Text = "  " + title,
             Dock = DockStyle.Fill,
-            ForeColor = Color.FromArgb(255, 205, 92),
-            Font = new Font("Segoe UI", 10f, FontStyle.Bold),
-            BorderStyle = BorderStyle.Fixed3D,
-            BackColor = Color.FromArgb(38, 40, 52)
+            ForeColor = Color.FromArgb(255, 200, 85),
+            Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
+            BackColor = Color.FromArgb(34, 38, 50),
+            TextAlign = ContentAlignment.MiddleLeft,
+            Padding = new Padding(4, 0, 0, 0)
         };
-        body.Margin = new Padding(0, 2, 0, 0);
+        body.Margin = new Padding(0, 4, 0, 0);
         t.Controls.Add(lbl, 0, 0);
         t.Controls.Add(body, 0, 1);
         return t;
@@ -1551,6 +1596,14 @@ public class WizardForm : Form
                     return;
                 }
                 throw;
+            }
+
+            if (_layout == null)
+            {
+                AddLog("Full auto paused: server core is not prepared. Pick a local .zip file or paste a URL, then click 'Download & Prepare Server'.");
+                SetStatus("Full auto paused: pick a server repack zip or paste a URL.", Color.OrangeRed);
+                SetBusy(false);
+                return;
             }
 
             // 4 data + bots

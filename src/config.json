@@ -29,7 +29,9 @@
       // Only used if the repack does NOT bundle MySQL/MariaDB and no local
       // MySQL/MariaDB server is found on the machine.
       "urls": [
-        "https://downloads.mysql.com/archives/get/p/23/file/mysql-8.0.42-winx64.msi"
+        "https://cdn.mysql.com/Downloads/MySQL-8.0/mysql-8.0.42-winx64.msi",
+        "https://downloads.mariadb.com/MariaDB/mariadb-10.11.8/winx64-packages/mariadb-10.11.8-winx64.msi",
+        "https://archive.mariadb.org/mariadb-10.11.8/winx64-packages/mariadb-10.11.8-winx64.msi"
       ],
       "onlyIfMissing": true
     },

@@ -8,13 +8,15 @@ public static class SqlUtil
     /// <summary>Run an SQL file through the mysql/mariadb client. Returns process exit code.</summary>
     public static int ImportSqlFile(DbServerInfo db, string database, string sqlFile, Action<string> log)
     {
+        string realSql = null;
+        bool isTempSql = false;
         try
         {
-            var realSql = EnsurePlainSql(sqlFile);
-        var bat = WriteTempBat(
-            $"\"{db.MysqlExe}\" --host={db.Host} --port={db.Port} --user={db.Login} " +
-            MysqlPassArg(db.Password) + " --protocol=TCP --default-character-set=utf8mb4 " +
-            DbArg(database) + " < \"" + realSql + "\"");
+            realSql = EnsurePlainSql(sqlFile, out isTempSql);
+            var bat = WriteTempBat(
+                $"\"{db.MysqlExe}\" --host={db.Host} --port={db.Port} --user={db.Login} " +
+                MysqlPassArg(db.Password) + " --protocol=TCP --default-character-set=utf8mb4 " +
+                DbArg(database) + " < \"" + realSql + "\"");
             var (code, outp) = RunBat(bat);
             log?.Invoke($"SQL import: {Path.GetFileName(sqlFile)} -> {database} (exit {code})");
             if (!string.IsNullOrWhiteSpace(outp))
@@ -25,6 +27,13 @@ public static class SqlUtil
         {
             log?.Invoke("SQL import error for " + Path.GetFileName(sqlFile) + ": " + ex.Message);
             return -1;
+        }
+        finally
+        {
+            if (isTempSql && !string.IsNullOrEmpty(realSql) && File.Exists(realSql))
+            {
+                try { File.Delete(realSql); } catch { }
+            }
         }
     }
 
@@ -124,12 +133,16 @@ public static class SqlUtil
     static string DbArg(string database)
         => string.IsNullOrEmpty(database) ? "" : " " + database;
 
-    static string EnsurePlainSql(string sqlFile)
+    static string EnsurePlainSql(string sqlFile, out bool isTemp)
     {
         var ext = Path.GetExtension(sqlFile).ToLowerInvariant();
-        if (ext == ".sql") return sqlFile;
-        var tmp = Path.Combine(Path.GetTempPath(), "azsql_" + Guid.NewGuid().ToString("N") + ".sql");
-        var tmpFile = tmp;
+        if (ext == ".sql")
+        {
+            isTemp = false;
+            return sqlFile;
+        }
+        isTemp = true;
+        var tmpFile = Path.Combine(Path.GetTempPath(), "azsql_" + Guid.NewGuid().ToString("N") + ".sql");
         if (ext == ".gz")
         {
             using var gz = File.OpenRead(sqlFile);
